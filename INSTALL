@@ -1,0 +1,5 @@
+For Linux or Mac, just type "make". It will compile the example zextest. 
+
+For Windows, open a Visual C++ command prompt and then type:
+
+	nmake /f Makefile.nmake

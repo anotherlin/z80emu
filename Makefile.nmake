@@ -1,0 +1,19 @@
+CC = cl
+CFLAGS = /O2
+
+all: zextest.exe
+
+tables.h: maketables.c
+	$(CC) maketables.c
+	maketables > $@
+
+z80emu.obj: z80emu.c z80emu.h instructions.h macros.h tables.h
+	$(CC) $(CFLAGS) /c z80emu.c
+
+zextest.obj: zextest.c z80emu.h
+	$(CC) /c zextest.c
+
+OBJECT_FILES = zextest.obj z80emu.obj
+
+zextest.exe: $(OBJECT_FILES)
+	link $(OBJECT_FILES) /out:zextest.exe
