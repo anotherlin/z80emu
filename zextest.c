@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include "z80emu.h"
 
+#include <inttypes.h>
+
 #ifdef _MSC_VER
 
 typedef __int64 int64_t;
@@ -89,7 +91,7 @@ static void emulate (char *filename)
                         break;
 
         }
-        printf("\n%lld cycle(s) emulated.\n" 
+        printf("\n%" PRId64 " cycle(s) emulated.\n" 
                 "For a Z80 running at %dMHz, "
                 "that would be %d second(s) or %.2f hour(s).\n",
                 total,
