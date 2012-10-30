@@ -2261,6 +2261,8 @@ emulate_next_instruction:
                                 READ_N(n);
                                 Z80_INPUT_BYTE(n, A);
 
+                                n = n;
+
                                 elapsed_cycles += 4;
 
                                 break;
@@ -2410,6 +2412,8 @@ emulate_next_instruction:
                                 READ_N(n);
                                 Z80_OUTPUT_BYTE(n, A);
 
+                                n = n;
+
                                 elapsed_cycles += 4;
 
                                 break;
@@ -2424,6 +2428,8 @@ emulate_next_instruction:
                                         ? R(Y(opcode))
                                         : 0;
                                 Z80_OUTPUT_BYTE(C, x);
+
+                                x = x;
 
                                 elapsed_cycles += 4;
 
