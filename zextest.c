@@ -11,17 +11,7 @@
 #include <stdlib.h>
 #include "z80emu.h"
 
-#ifdef _MSC_VER
-
-typedef __int64 int64_t;
-
-#else
-
-#include <stdint.h>
-
-#endif
-
-#define Z80_CPU_SPEED           4000000
+#define Z80_CPU_SPEED           4000000   /* in Hz */
 #define CYCLES_PER_STEP         (Z80_CPU_SPEED / 50)
 #define MAXIMUM_STRING_LENGTH   100
 
@@ -45,7 +35,7 @@ static void emulate (char *filename)
         FILE            *file;
         long            l;
         Z80_STATE       state;
-        int64_t         total;
+        double          total;
 
         printf("Testing \"%s\"...\n", filename);
 
@@ -78,9 +68,9 @@ static void emulate (char *filename)
 
         /* Emulate. */
 
-        Z80Reset(&state);        
+        Z80Reset(&state);
         state.pc = 0x100;
-        total = 0;
+        total = 0.0;
         for ( ; ; ) {
 
                 total += Z80Emulate(&state, CYCLES_PER_STEP);
@@ -89,11 +79,11 @@ static void emulate (char *filename)
                         break;
 
         }
-        printf("\n%lld cycle(s) emulated.\n" 
-                "For a Z80 running at %dMHz, "
+        printf("\n%.0f cycle(s) emulated.\n" 
+                "For a Z80 running at %.2fMHz, "
                 "that would be %d second(s) or %.2f hour(s).\n",
                 total,
-                Z80_CPU_SPEED, 
+                Z80_CPU_SPEED / 1000000.0,
                 (int) (total / Z80_CPU_SPEED),
                 total / ((double) 3600 * Z80_CPU_SPEED));
 }
