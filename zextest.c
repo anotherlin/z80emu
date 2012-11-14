@@ -3,6 +3,7 @@
  * check if the Z80 is correctly emulated.
  *
  * Copyright (c) 2012 Lin Ke-Fong
+ * Copyright (c) 2012 Chris Pressey
  *
  * This program is free, do whatever you want with it.
  */
@@ -11,7 +12,7 @@
 #include <stdlib.h>
 #include "z80emu.h"
 
-#define Z80_CPU_SPEED           4000000   /* in Hz */
+#define Z80_CPU_SPEED           4000000   /* In Hz. */
 #define CYCLES_PER_STEP         (Z80_CPU_SPEED / 50)
 #define MAXIMUM_STRING_LENGTH   100
 
