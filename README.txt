@@ -1,5 +1,5 @@
 z80emu
-Version 1.0.0
+Version 1.0.1
 
 Copyright (c) 2012 Lin Ke-Fong
 
@@ -40,3 +40,11 @@ university. I hope I will complete it someday.
 Feel free to send bug reports, comments, and suggestions to:
 
 another_lin@yahoo.com
+
+Revision history:
+
+1.0.1
+
+Original implementation of zextest used int64_t. In retrospect, this was a poor 
+choice. Using double to count cycles is ANSI and has more than enough precision 
+to do so. Thank you Chris Pressey (cpressey@gmail.com).
