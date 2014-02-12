@@ -43,14 +43,21 @@ another_lin@yahoo.com
 
 Revision history:
 
-1.0.1
+1.0.0 (13 March 2012)
+
+Initial commit on github. Actually, the code has been almost entirely written 
+during the summer of 2006.
+
+1.0.1 (14 November 2012)
 
 Original implementation of zextest used int64_t. In retrospect, this was a poor 
 choice. Using double to count cycles is ANSI and has more than enough precision 
 to do so. Thank you Chris Pressey (cpressey@gmail.com).
 
-1.0.2
+1.0.2 (12 February 2014)
 
 Conditional relative jump (JR_DD_E) instructions such as "jr NZ, myLoopLabel"
-were not decoded correctly, just a silly bug in a macro to extract bits. Thank
-you Marcelo Dantas (marcelo.f.dantas@gmail.com).
+were not decoded correctly, just a silly bug in a macro to extract bits. The 
+zexdoc and zexall exercisers have excellent coverage of ALU instructions, but
+they both don't feature a single "JR" instruction! Hence this (very obvious)
+bug has gone unnoticed. Thank you Marcelo Dantas (marcelo.f.dantas@gmail.com).
