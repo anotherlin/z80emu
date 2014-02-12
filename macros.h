@@ -35,7 +35,7 @@
 #define Y(opcode)       (((opcode) >> 3) & 0x07)
 #define Z(opcode)       ((opcode) & 0x07)
 #define P(opcode)       (((opcode) >> 4) & 0x03)
-#define Q(opcode)       (((opcode) & 0x03) >> 3)
+#define Q(opcode)       (((opcode) >> 3) & 0x03)
 
 /* Registers and conditions are decoded using tables in encodings.h.  S() is
  * for the special cases "LD H/L, (IX/Y + d)" and "LD (IX/Y + d), H/L".
