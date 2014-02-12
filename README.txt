@@ -1,7 +1,7 @@
 z80emu
-Version 1.0.1
+Version 1.0.2
 
-Copyright (c) 2012 Lin Ke-Fong
+Copyright (c) 2012-2014 Lin Ke-Fong
 
 z80emu is a free portable Z80 processor emulator. Its performance is comparable
 to other Z80 emulators. It emulates all undocumented features as described in 
@@ -48,3 +48,9 @@ Revision history:
 Original implementation of zextest used int64_t. In retrospect, this was a poor 
 choice. Using double to count cycles is ANSI and has more than enough precision 
 to do so. Thank you Chris Pressey (cpressey@gmail.com).
+
+1.0.2
+
+Conditional relative jump (JR_DD_E) instructions such as "jr NZ, myLoopLabel"
+were not decoded correctly, just a silly bug in a macro to extract bits. Thank
+you Marcelo Dantas (marcelo.f.dantas@gmail.com).
