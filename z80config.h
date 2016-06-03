@@ -1,6 +1,5 @@
 /* z80config.h
- * Define or comment macros in this file to configure the features implemented
- * in the emulator. 
+ * Define or comment out macros in this file to configure the emulator. 
  *
  * Copyright (c) 2016 Lin Ke-Fong
  *
@@ -47,9 +46,9 @@
 */
 
 /* Undefined 0xed prefixed opcodes may be catched, otherwise they are treated
- * like NOPs. When one is catched, Z80_STATUS_FLAG_ED_UNDEFINED is set in 
- * Z80_STATE's status member and the PC register points at the 0xed prefix 
- * before the undefined opcode. The elapsed cycles are not counted.
+ * like NOP instructions. When one is catched, Z80_STATUS_FLAG_ED_UNDEFINED is 
+ * set in Z80_STATE's status member and the PC register points at the 0xed 
+ * prefix before the undefined opcode. The elapsed cycles are not counted.
  */
 
 /* #define Z80_CATCH_ED_UNDEFINED */
