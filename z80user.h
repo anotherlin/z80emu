@@ -33,37 +33,45 @@ extern "C" {
  *
  * All macros have access to the following variables:
  *
- *      state           Pointer to the current Z80_STATE. Member registers is
- *                      most likely not up to date because the current 
- *                      executing instruction is working on it.
+ *	context 	This is the (void *) context passed to the emulation 
+ *			functions.
  *
- *      pc              Current PC register (upper bits are undefined). It
- *                      points on the displacement or constant to read for
- *                      Z80_FETCH_BYTE() and Z80_FETCH_WORD(), or on the next
- *                      instruction otherwise.
- *              
- *      number_cycles   Number of cycles to emulate. Set number_cycles to zero
- *                      if you want to quit emulation after completion of the
- *                      current instruction.
+ *      number_cycles   Number of cycles to emulate. You may decrease or 
+ *                      increase the value of number_cycles to stop the 
+ *			emulation earlier or later. In particular, if you set 
+ *			it to zero, the emulator will stop after completion of
+ *                      the current instruction. 
+ * 
+ *      elapsed_cycles  Number of cycles emulated. After executing each
+ *			instruction, the emulator checks if elapsed_cycles is
+ *			greater or equal to number_cycles, and will stops if 
+ *			so. You may add wait states for slow memory accesses if
+ *			needed. Because the macros are called during the 
+ *			execution of the current instruction, this number is 
+ *			only correct up to the previous one.
  *
- *      elapsed_cycles  Number of cycles emulated, you may add wait states
- *                      for slow memory accesses if needed.
+ *      registers       Current register decoding table, use it to determine if
+ * 			the current instruction is prefixed. It points on:
+ *                      
+ *				state->dd_register_table for 0xdd prefixes; 
+ *                      	state->fd_register_table for 0xfd;
+ *				state->register_table otherwise.
+ *
+ *      opcode          Opcode of the currently executing instruction.
  *
  *      instruction     Type of the currently executing instruction, see
  *                      instructions.h for a list.
  *
- *      registers       Current register decoding table, it points on 
- *                      dd_register_table for 0xdd prefixed instructions, 
- *                      fd_register_table for 0xfd ones, or register_table
- *                      otherwise.
+ *      pc              Current PC register (upper bits are undefined), points
+ *                      on the displacement or constant to read for
+ *                      Z80_FETCH_BYTE() and Z80_FETCH_WORD(), or on the next
+ *                      instruction otherwise.
  *
- *      opcode          Opcode of the currently executing instruction, check
- *                      register_table for 0xdd or 0xfd prefixes.
- *
- *	context 	This is the (void *) context pointer passed to the
- *			Z80Interrupt(), Z80NonMaskableInterrupt(), or 
- *			Z80Emulate() function. Cast it to your appropriate 
- *			pointer type. 
+ *      state           Pointer to the current Z80_STATE. Because the 
+ *			instruction is currently executing, members may not be 
+ *			fully up to date, depending when the macro is called.
+ *			It is rather suggested to access the state when the 
+ *			emulator is stopped. 
  */
 
 /* Here are macros for emulating zextest. Read/write memory macros have been 

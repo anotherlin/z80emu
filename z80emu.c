@@ -2557,17 +2557,23 @@ emulate_next_instruction:
 
                         case FD_PREFIX: {
 
-                                registers = fd_register_table;
+                                
 
 #ifdef Z80_PREFIX_FAILSAFE
 
+//pareil pour DD_PREFIX
+
+
                                 if (elapsed_cycles < number_cycles + 4) {
 
+                                        registers = fd_register_table;
                                         Z80_FETCH_BYTE(pc, opcode);
                                         pc++;
                                         goto emulate_next_opcode;
 
                                 } else {
+
+                                        // check                
 
                                         pc--;
                                         elapsed_cycles -= 4;
@@ -2577,6 +2583,7 @@ emulate_next_instruction:
 
 #else
         
+                                registers = fd_register_table;
                                 Z80_FETCH_BYTE(pc, opcode);
                                 pc++;
                                 goto emulate_next_opcode;

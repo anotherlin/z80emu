@@ -1,0 +1,7 @@
+1) rearrangement more user friendly use:
+2) ajout d'un context 
+3) fix pour la gestion des instructions prefixes notamment FAILSAFE;
+min 12 cycles pour consommer 1 fd ou 1 dd
+
+
+interrupt et variables pour macros!!!!!
