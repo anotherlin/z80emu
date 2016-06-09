@@ -14,28 +14,7 @@
 extern "C" {
 #endif
 
-/* Z80 processor's state. You may add additionnal members as necessary. For
- * instance, you can add a pointer to the global state of the emulated system.
- */
-
-typedef struct {
-
-        int             status;
-                                
-        union {
-                                
-                unsigned char   byte[14];
-                unsigned short  word[7];
-
-        } registers;
-
-        unsigned short  alternates[4];
-
-        int             i, r, pc, iff1, iff2, im;
-
-} Z80_STATE;
-
-/* Write the following macros for memory access and input/output of the Z80. 
+/* Write the following macros for memory access and input/output on the Z80. 
  *
  * Z80_FETCH_BYTE() and Z80_FETCH_WORD() are used by the emulator to read the
  * code (opcode, constants, displacement, etc). The upper 16-bit of the address
@@ -80,11 +59,17 @@ typedef struct {
  *
  *      opcode          Opcode of the currently executing instruction, check
  *                      register_table for 0xdd or 0xfd prefixes.
+ *
+ *	context 	This is the (void *) context pointer passed to the
+ *			Z80Interrupt(), Z80NonMaskableInterrupt(), or 
+ *			Z80Emulate() function. Cast it to your appropriate 
+ *			pointer type. 
  */
 
 /* Here are macros for emulating zextest. Read/write memory macros have been 
  * written for a linear 64k RAM. Input/output port macros are used to simulate 
- * system calls.
+ * system calls. Variables are global (not very elegant albeit simple), hence 
+ * context is not used.
  */
 
 #include "zextest.h"

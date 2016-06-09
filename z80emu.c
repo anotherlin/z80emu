@@ -1,13 +1,13 @@
 /* z80emu.c
- * Z80 processor emulator. Modify z80emu.h to customize it for your needs but 
- * not this module directly.
+ * Z80 processor emulator. 
  *
- * Copyright (c) 2012 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  *
  * This program is free, do whatever you want with it.
  */
 
 #include "z80emu.h"
+#include "z80user.h"
 #include "instructions.h"
 #include "macros.h"
 #include "tables.h"
@@ -67,35 +67,89 @@ static const int RST_TABLE[8] = {
  * significant bit is not zero.
  */
 
-static const int        OVERFLOW_TABLE[4] = {
+static const int OVERFLOW_TABLE[4] = {
                         
-                                0,
-                                Z80_V_FLAG,
-                                Z80_V_FLAG,
-                                0,
+	0,
+       	Z80_V_FLAG,
+       	Z80_V_FLAG,
+       	0,
 
-                        };
+};
 
-static int      emulate (Z80_STATE * state, int number_cycles, int opcode);
-                                        
-/* Reset processor's state to power-on default and reset status. */
+static int      emulate (Z80_STATE * state, 
+			int number_cycles, int opcode,
+			void *context);
 
 void Z80Reset (Z80_STATE *state)
 {
+        int     i;
+        
         state->status = 0;
         AF = 0xffff;
         SP = 0xffff;
         state->i = state->pc = state->iff1 = state->iff2 = 0;
         state->im = Z80_INTERRUPT_MODE_0;
+        
+        /* Build register decoding tables for both 3-bit encoded 8-bit
+         * registers and 2-bit encoded 16-bit registers. When an opcode is 
+         * prefixed by 0xdd, HL is replaced by IX. When 0xfd prefixed, HL is
+         * replaced by IY.
+         */
+
+        /* 8-bit "R" registers. */
+
+        state->register_table[0] = &state->registers.byte[Z80_B];
+        state->register_table[1] = &state->registers.byte[Z80_C];
+        state->register_table[2] = &state->registers.byte[Z80_D];
+        state->register_table[3] = &state->registers.byte[Z80_E];
+        state->register_table[4] = &state->registers.byte[Z80_H];
+        state->register_table[5] = &state->registers.byte[Z80_L];
+
+        /* Encoding 0x06 is used for indexed memory operands and direct HL or
+         * IX/IY register access.
+         */
+
+        state->register_table[6] = &state->registers.word[Z80_HL];
+        state->register_table[7] = &state->registers.byte[Z80_A];
+               
+        /* "Regular" 16-bit "RR" registers. */
+
+        state->register_table[8] = &state->registers.word[Z80_BC];
+        state->register_table[9] = &state->registers.word[Z80_DE];
+        state->register_table[10] = &state->registers.word[Z80_HL];
+        state->register_table[11] = &state->registers.word[Z80_SP];
+        
+        /* 16-bit "SS" registers for PUSH and POP instructions (note that SP is
+         * replaced by AF). 
+         */
+
+        state->register_table[12] = &state->registers.word[Z80_BC];
+        state->register_table[13] = &state->registers.word[Z80_DE];
+        state->register_table[14] = &state->registers.word[Z80_HL];
+        state->register_table[15] = &state->registers.word[Z80_AF];
+
+        /* 0xdd and 0xfd prefixed register decoding tables. */
+
+        for (i = 0; i < 16; i++)
+
+                state->dd_register_table[i] 
+                        = state->fd_register_table[i] 
+                        = state->register_table[i];
+
+        state->dd_register_table[4] = &state->registers.byte[Z80_IXH];
+        state->dd_register_table[5] = &state->registers.byte[Z80_IXL];
+        state->dd_register_table[6] = &state->registers.word[Z80_IX];
+        state->dd_register_table[10] = &state->registers.word[Z80_IX];
+        state->dd_register_table[14] = &state->registers.word[Z80_IX];
+
+        state->fd_register_table[4] = &state->registers.byte[Z80_IYH];
+        state->fd_register_table[5] = &state->registers.byte[Z80_IYL];
+        state->fd_register_table[6] = &state->registers.word[Z80_IY];
+        state->fd_register_table[10] = &state->registers.word[Z80_IY];
+        state->fd_register_table[14] = &state->registers.word[Z80_IY];        
 }
 
-/* Trigger an interrupt according to the current interrupt mode and return the
- * number of cycles required to accept it. If maskable interrupts are disabled,
- * this will return zero. Z80_STATE's status is updated. In interrupt mode 0,
- * data_on_bus must be a single byte opcode.
- */
-
-int Z80Interrupt (Z80_STATE *state, int data_on_bus)
+int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
 {
         state->status = 0;
         if (state->iff1) {
@@ -111,7 +165,8 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus)
                                  * should take 2 + 11 = 13 cycles.
                                  */
 
-                                return 2 + emulate(state, 4, data_on_bus);
+                                return 2 
+				+ emulate(state, 4, data_on_bus, context);
                                 
                         }
 
@@ -144,11 +199,7 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus)
                 return 0;
 }
 
-/* Trigger a non maskable interrupt, return the number of cycles needed to
- * accept it. Z80_STATE's status is reset.
- */
-
-int Z80NonMaskableInterrupt (Z80_STATE *state)
+int Z80NonMaskableInterrupt (Z80_STATE *state, void *context)
 {
         state->status = 0;
 
@@ -163,14 +214,6 @@ int Z80NonMaskableInterrupt (Z80_STATE *state)
         return 11;
 }
 
-/* Emulate a Z80 processor for number_cycles cycles, which must be greater or
- * equal to 4. Return the number of emulated cycles, this number will be equal
- * to number_cycles or be slightly greater (most probable case). It will be
- * less if the emulation has been interrupted. Z80_STATE's status member is
- * reset at the start of the emulation. If the emulation is interrupted, it may
- * indicate the reason why.
- */
-
 int Z80Emulate (Z80_STATE *state, int number_cycles)
 {
         int     opcode;
@@ -180,85 +223,22 @@ int Z80Emulate (Z80_STATE *state, int number_cycles)
 
         state->status = 0;
 
-        return emulate(state, number_cycles, opcode);
+        return emulate(state, number_cycles, opcode, context);
 }
 
 /* Actual emulation function. opcode is the first opcode to emulate, this is 
  * needed by Z80Interrupt() for interrupt mode 0.
  */
 
-static int emulate (Z80_STATE * state, int number_cycles, int opcode)
-
+static int emulate (Z80_STATE * state, 
+	int number_cycles, int opcode, 
+	void *context)
 {
-        int     elapsed_cycles, 
-                pc, r, 
-                i;
-        void    *register_table[16], 
-                *dd_register_table[16], 
-                *fd_register_table[16];
-
+        int     elapsed_cycles, pc, r;
+                
         elapsed_cycles = 0;
-
         pc = state->pc;
         r = state->r & 0x7f;
-
-        /* Build register decoding tables for both 3-bit encoded 8-bit
-         * registers and 2-bit encoded 16-bit registers. When an opcode is 
-         * prefixed by 0xdd, HL is replaced by IX. When 0xfd prefixed, HL is
-         * replaced by IY.
-         */
-
-        /* 8-bit "R" registers. */
-
-        register_table[0] = &state->registers.byte[Z80_B];
-        register_table[1] = &state->registers.byte[Z80_C];
-        register_table[2] = &state->registers.byte[Z80_D];
-        register_table[3] = &state->registers.byte[Z80_E];
-        register_table[4] = &state->registers.byte[Z80_H];
-        register_table[5] = &state->registers.byte[Z80_L];
-
-        /* Encoding 0x06 is used for indexed memory operands and direct HL or
-         * IX/IY register access.
-         */
-
-        register_table[6] = &state->registers.word[Z80_HL];
-        register_table[7] = &state->registers.byte[Z80_A];
-               
-        /* "Regular" 16-bit "RR" registers. */
-
-        register_table[8] = &state->registers.word[Z80_BC];
-        register_table[9] = &state->registers.word[Z80_DE];
-        register_table[10] = &state->registers.word[Z80_HL];
-        register_table[11] = &state->registers.word[Z80_SP];
-        
-        /* 16-bit "SS" registers for PUSH and POP instructions (note that SP is
-         * replaced by AF). 
-         */
-
-        register_table[12] = &state->registers.word[Z80_BC];
-        register_table[13] = &state->registers.word[Z80_DE];
-        register_table[14] = &state->registers.word[Z80_HL];
-        register_table[15] = &state->registers.word[Z80_AF];
-
-        /* 0xdd and 0xfd prefixed register decoding tables. */
-
-        for (i = 0; i < 16; i++)
-
-                dd_register_table[i] 
-                        = fd_register_table[i] 
-                        = register_table[i];
-
-        dd_register_table[4] = &state->registers.byte[Z80_IXH];
-        dd_register_table[5] = &state->registers.byte[Z80_IXL];
-        dd_register_table[6] = &state->registers.word[Z80_IX];
-        dd_register_table[10] = &state->registers.word[Z80_IX];
-        dd_register_table[14] = &state->registers.word[Z80_IX];
-
-        fd_register_table[4] = &state->registers.byte[Z80_IYH];
-        fd_register_table[5] = &state->registers.byte[Z80_IYL];
-        fd_register_table[6] = &state->registers.word[Z80_IY];
-        fd_register_table[10] = &state->registers.word[Z80_IY];
-        fd_register_table[14] = &state->registers.word[Z80_IY];
 
         goto start_emulation;
 
