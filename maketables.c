@@ -84,7 +84,6 @@ static void make_instruction_table (void)
                                                 };
 
                                 s = strings[i];
-
                                 break;
 
                         }
@@ -116,7 +115,6 @@ static void make_instruction_table (void)
                                                 };
 
                                 s = strings[i];
-
                                 break;
 
                         }
@@ -190,7 +188,6 @@ static void make_instruction_table (void)
                                                 };
 
                                 s = strings[i];
-
                                 break;
 
                         }
@@ -368,7 +365,6 @@ static void make_instruction_table (void)
 
                                 printf("%s", accumulator_operations[i]);
                                 s = "_N";
-                                
                                 break;
 
                         }
