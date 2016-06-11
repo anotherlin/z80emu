@@ -5,3 +5,5 @@ min 12 cycles pour consommer 1 fd ou 1 dd
 
 
 interrupt et variables pour macros!!!!!
+
+* finir doc z80emu.h oour les fonctions

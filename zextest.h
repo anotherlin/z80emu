@@ -1,20 +1,24 @@
 /* zextest.h
  * Header for zextest example.
  *
- * Copyright (c) 2012 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  *
  * This program is free, do whatever you want with it.
  */
 
 #ifndef __ZEXTEST_INCLUDED__
 
-/* Additional Z80_STATE status flag to request emulation termination. */
-                                
-#define FLAG_STOP_EMULATION     (1 << 31)
+#include "z80emu.h"
 
-extern unsigned char    memory[1 << 16];
+typedef struct ZEXTEST {
 
-extern void     SystemCall (Z80_STATE *state);
+	Z80_STATE	state;
+	unsigned char	memory[1 << 16];
+	int 		is_done;
+
+} ZEXTEST;
+
+extern void     SystemCall (ZEXTEST *context);
 
 #define __ZEXTEST_INCLUDED__
 

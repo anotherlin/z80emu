@@ -1,6 +1,6 @@
 /* z80emu.h
  * Main header of z80emu. Don't modify this file directly. Use z80config.h and
- * z80user.h to customize the emulator to your need. 
+ * z80user.h to customize the emulator for your need. 
  *
  * Copyright (c) 2012-2016 Lin Ke-Fong
  *
@@ -16,16 +16,21 @@ extern "C" {
 
 #include "z80config.h"
 
-/* Flags for Z80_STATE's status member. If the emulation is interrupted, status
- * can indicate why. You may add additionnal flags for your own use as needed.
+/* If Z80_STATE's status is non-zero, the emulation has been stopped for some 
+ * reason other than emulating the requested number of cycles. See z80config.h.
  */
 
-#define Z80_STATUS_FLAG_HALT            (1 << 0)
-#define Z80_STATUS_FLAG_DI              (1 << 1)
-#define Z80_STATUS_FLAG_EI              (1 << 2)
-#define Z80_STATUS_FLAG_RETI            (1 << 3)
-#define Z80_STATUS_FLAG_RETN            (1 << 4)
-#define Z80_STATUS_FLAG_ED_UNDEFINED    (1 << 5)
+enum {
+
+	Z80_STATUS_HALT = 1,
+	Z80_STATUS_DI,
+	Z80_STATUS_EI,
+	Z80_STATUS_RETI,
+	Z80_STATUS_RETN,
+	Z80_STATUS_ED_UNDEFINED,
+	Z80_STATUS_PREFIXED,
+
+};
  
 /* The main registers are stored inside Z80_STATE as an union of arrays named 
  * registers. They are referenced using indexes. Words are stored in the 
@@ -113,8 +118,8 @@ enum {
 };
 
 /* Z80 processor's state. You may add your own members if needed. However, it
- * is rather recommended to use the context pointer passed to the emulation 
- * functions. See z80user.h.
+ * is rather suggested to use the context pointer passed to the emulation 
+ * functions for that purpose. See z80user.h.
  */ 
 
 typedef struct Z80_STATE {
@@ -132,7 +137,7 @@ typedef struct Z80_STATE {
 
         int             i, r, pc, iff1, iff2, im;
         
-        /* Register decoding table. */
+        /* Register decoding tables. */
 
         void            *register_table[16], 
                         *dd_register_table[16], 

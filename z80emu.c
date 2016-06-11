@@ -173,7 +173,7 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
                         case Z80_INTERRUPT_MODE_1: {
 
                                 SP -= 2;
-                                Z80_WRITE_WORD(SP, state->pc);          
+                                Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
                                 state->pc = 0x0038;
                                 return 13;
 
@@ -183,7 +183,7 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
                         default: {
 
                                 SP -= 2;
-                                Z80_WRITE_WORD(SP, state->pc);
+                                Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
                                 state->pc = 
                                         (state->i << 8 | data_on_bus) 
                                         & 0xfffe;
@@ -208,7 +208,7 @@ int Z80NonMaskableInterrupt (Z80_STATE *state, void *context)
         state->r = (state->r & 0x80) | ((state->r + 1) & 0x7f);
 
         SP -= 2;
-        Z80_WRITE_WORD(SP, state->pc);
+        Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
         state->pc = 0x0066;
         
         return 11;
@@ -252,7 +252,7 @@ static int emulate (Z80_STATE * state,
 
 start_emulation:                
 
-                registers = register_table;
+                registers = state->register_table;
 
 emulate_next_opcode:
 
@@ -282,7 +282,7 @@ emulate_next_instruction:
 
                         case LD_R_INDIRECT_HL: {
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, R(Y(opcode)));
 
@@ -303,7 +303,7 @@ emulate_next_instruction:
 
                         case LD_INDIRECT_HL_R: {
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         WRITE_BYTE(HL, R(Z(opcode)));
 
@@ -326,7 +326,7 @@ emulate_next_instruction:
 
                                 int     n;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_N(n);
                                         WRITE_BYTE(HL, n);
@@ -1020,7 +1020,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         INC(x);
@@ -1057,7 +1057,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         DEC(x);
@@ -1202,7 +1202,7 @@ emulate_next_instruction:
 
 #ifdef Z80_CATCH_HALT
 
-                                state->status |= Z80_STATUS_FLAG_HALT;
+                                state->status = Z80_STATUS_FLAG_HALT;
                                 goto stop_emulation;
 
 #else
@@ -1220,7 +1220,7 @@ emulate_next_instruction:
 
 #ifdef Z80_CATCH_DI
 
-                                state->status |= Z80_STATUS_FLAG_DI;
+                                state->status = Z80_STATUS_FLAG_DI;
                                 goto stop_emulation;
 
 #else
@@ -1250,7 +1250,7 @@ emulate_next_instruction:
 
 #ifdef Z80_CATCH_EI
 
-                                state->status |= Z80_STATUS_FLAG_EI;
+                                state->status = Z80_STATUS_FLAG_EI;
                                 goto stop_emulation;
 
 #else
@@ -1493,7 +1493,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         RLC(x);
@@ -1537,7 +1537,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         RL(x);
@@ -1581,7 +1581,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         RRC(x);
@@ -1625,7 +1625,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         RR_INSTRUCTION(x);
@@ -1669,7 +1669,7 @@ emulate_next_instruction:
 
                                 int     x;      
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         SLA(x);
@@ -1713,7 +1713,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         SLL(x);
@@ -1757,7 +1757,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         SRA(x);
@@ -1801,7 +1801,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         SRL(x);
@@ -1884,7 +1884,7 @@ emulate_next_instruction:
 
                                 int     d, x;
                                         
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         d = HL;
 
@@ -1930,7 +1930,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         x |= 1 << Y(opcode);
@@ -1974,7 +1974,7 @@ emulate_next_instruction:
 
                                 int     x;
 
-                                if (registers == register_table) {
+                                if (registers == state->register_table) {
 
                                         READ_BYTE(HL, x);
                                         x &= ~(1 << Y(opcode));
@@ -2200,19 +2200,19 @@ emulate_next_instruction:
 
 #if defined(Z80_CATCH_RETI) && defined(Z80_CATCH_RETN)
 
-                                state->status |= opcode == OPCODE_RETI
+                                state->status = opcode == OPCODE_RETI
                                         ? Z80_STATUS_FLAG_RETI
                                         : Z80_STATUS_FLAG_RETN;
                                 goto stop_emulation;
 
 #elif defined(Z80_CATCH_RETI)
 
-                                state->status |= Z80_STATUS_FLAG_RETI;
+                                state->status = Z80_STATUS_FLAG_RETI;
                                 goto stop_emulation;
 
 #elif defined(Z80_CATCH_RETN)
 
-                                state->status |= Z80_STATUS_FLAG_RETN;
+                                state->status = Z80_STATUS_FLAG_RETN;
                                 goto stop_emulation;
 
 #else
@@ -2499,7 +2499,7 @@ emulate_next_instruction:
                                  * prefixed by a 0xdd or 0xfd prefix.
                                  */
 
-                                if (registers != register_table) {
+                                if (registers != state->register_table) {
 
                                         r--;
 
@@ -2523,7 +2523,7 @@ emulate_next_instruction:
 
                         case DD_PREFIX: {
 
-                                registers = dd_register_table;
+                                registers = state->dd_register_table;
 
 #ifdef Z80_PREFIX_FAILSAFE
 
@@ -2557,16 +2557,12 @@ emulate_next_instruction:
 
                         case FD_PREFIX: {
 
-                                
+                                registers = state->fd_register_table;
 
 #ifdef Z80_PREFIX_FAILSAFE
 
-//pareil pour DD_PREFIX
-
-
                                 if (elapsed_cycles < number_cycles + 4) {
 
-                                        registers = fd_register_table;
                                         Z80_FETCH_BYTE(pc, opcode);
                                         pc++;
                                         goto emulate_next_opcode;
@@ -2583,7 +2579,6 @@ emulate_next_instruction:
 
 #else
         
-                                registers = fd_register_table;
                                 Z80_FETCH_BYTE(pc, opcode);
                                 pc++;
                                 goto emulate_next_opcode;
@@ -2594,7 +2589,7 @@ emulate_next_instruction:
 
                         case ED_PREFIX: {
 
-                                registers = register_table;
+                                registers = state->register_table;
                                 Z80_FETCH_BYTE(pc, opcode);
                                 pc++;
                                 instruction = ED_INSTRUCTION_TABLE[opcode];
@@ -2609,10 +2604,8 @@ emulate_next_instruction:
 
 #ifdef Z80_CATCH_ED_UNDEFINED
 
-                                state->status 
-                                        |= Z80_STATUS_FLAG_ED_UNDEFINED;
+                                state->status = Z80_STATUS_FLAG_ED_UNDEFINED;
                                 pc -= 2;
-                                elapsed_cycles -= 8;
                                 goto stop_emulation;
 
 #else

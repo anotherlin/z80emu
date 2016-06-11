@@ -1,4 +1,4 @@
-/* z80config.h
+/* z80config.h 
  * Define or comment out macros in this file to configure the emulator. 
  *
  * Copyright (c) 2016 Lin Ke-Fong
@@ -19,22 +19,11 @@
 
 /* #define Z80_DOCUMENTED_FLAGS_ONLY */
 
-/* The emulator cannot be stopped between prefixed opcodes. This can be a 
- * problem if there is a long sequence of 0xdd and/or 0xfd prefixes. But if
- * Z80_PREFIX_FAILSAFE is defined, it will always be able to stop after at 
- * least number_cycles cycles are executed. This is safer but a little bit 
- * slower for 0xdd and 0xfd prefixes handling. Most program won't need this
- * feature.
- */
-
-/* #define Z80_PREFIX_FAILSAFE */
-
 /* HALT, DI, EI, RETI, and RETN instructions can be catched. When such an
  * instruction is catched, the emulator is stopped and the PC register points
- * at the opcode to be executed next. The catched instruction can be retrieved
- * from the flags of Z80_STATE's status member. Keep in mind that no interrupt
- * can be accepted at the instruction right after a DI or EI on an actual Z80 
- * processor.
+ * at the opcode to be executed next. The catched instruction can be determined
+ * from the Z80_STATE's status value. Keep in mind that no interrupt can be 
+ * accepted at the instruction right after a DI or EI on an actual processor. 
  */
 
 /*      
@@ -46,13 +35,25 @@
 */
 
 /* Undefined 0xed prefixed opcodes may be catched, otherwise they are treated
- * like NOP instructions. When one is catched, Z80_STATUS_FLAG_ED_UNDEFINED is 
- * set in Z80_STATE's status member and the PC register points at the 0xed 
- * prefix before the undefined opcode. The elapsed cycles are not counted.
+ * like NOP instructions. When one is catched, Z80_STATUS_ED_UNDEFINED is set 
+ * in Z80_STATE's status member and the PC register points at the 0xed prefix 
+ * before the undefined opcode.
  */
 
 /* #define Z80_CATCH_ED_UNDEFINED */
-        
+
+/* The emulator cannot be stopped between prefixed opcodes. This can be a 
+ * problem if there is a long sequence of 0xdd and/or 0xfd prefixes. But if
+ * Z80_PREFIX_FAILSAFE is defined, it will always be able to stop after at 
+ * least the requested numbers cycles are executed, in which case Z80_STATE's 
+ * status is set to Z80_STATUS_PREFIXED. Note that if the memory where the
+ * opcodes are read, has wait states (slow memory), then the additional cycles
+ * for a one byte fetch (the non executed prefix) must be substracted. Most
+ * program won't need this feature, even if it is safer.  
+ */
+
+/* #define Z80_PREFIX_FAILSAFE */
+     
 /* By defining this macro, the emulator will always fetch the displacement or 
  * address of a conditionnal jump or call instruction, even if the condition 
  * is false and the fetch can be avoided.

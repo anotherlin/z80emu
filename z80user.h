@@ -20,18 +20,21 @@ extern "C" {
  * code (opcode, constants, displacement, etc). The upper 16-bit of the address
  * parameters is undefined and must be reset to zero before actually reading 
  * memory (use & 0xffff). The value x read, must be an unsigned 8-bit or 16-bit
- * value in the endianness of the host processor.
+ * value in the endianness of the host processor. 
  *
  * Z80_READ_BYTE(), Z80_WRITE_BYTE(), Z80_READ_WORD(), and Z80_WRITE_WORD()
  * are used for general memory access. They obey the same rule as the code 
  * reading macros. The upper bits of the value x to write may be non-zero.
+ * Z80_WRITE_WORD_INTERRUPT() is same as Z80_WRITE_WORD(), except it doesn't 
+ * have access to all variables.
  * 
  * Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() are for input and output. The upper
  * bits of the port number to read or write are always zero. The input byte x 
  * must be an unsigned 8-bit value. The value x to write is an unsigned 8-bit 
  * with its upper bits zeroed.
  *
- * All macros have access to the following variables:
+ * All macros except Z80_WRITE_WORD_INTERRUPT(), have access to the following 
+ * variables:
  *
  *	context 	This is the (void *) context passed to the emulation 
  *			functions.
@@ -72,6 +75,8 @@ extern "C" {
  *			fully up to date, depending when the macro is called.
  *			It is rather suggested to access the state when the 
  *			emulator is stopped. 
+ *
+ * Z80_WRITE_WORD_INTERRUPT() only has access to context and state variables.
  */
 
 /* Here are macros for emulating zextest. Read/write memory macros have been 
@@ -124,7 +129,7 @@ extern "C" {
 #define Z80_OUTPUT_BYTE(port, x)                                        \
 {                                                                       \
         number_cycles = 0;                                              \
-        state->status |= FLAG_STOP_EMULATION;                           \
+        emulatiion |= FLAG_STOP_EMULATION;                           	\
 }
 
 #ifdef __cplusplus
