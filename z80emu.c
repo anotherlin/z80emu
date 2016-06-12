@@ -214,10 +214,11 @@ int Z80NonMaskableInterrupt (Z80_STATE *state, void *context)
         return 11;
 }
 
-int Z80Emulate (Z80_STATE *state, int number_cycles)
+int Z80Emulate (Z80_STATE *state, int number_cycles, void *context)
 {
-        int     opcode;
+        int     elapsed_cycles, opcode;
 
+	elapsed_cycles = 0;
         Z80_FETCH_BYTE(state->pc, opcode);
         state->pc++;
 

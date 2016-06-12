@@ -2,7 +2,7 @@
  * Example program using z80emu to run the zexall and zexdoc tests. This will 
  * check if the Z80 is correctly emulated.
  *
- * Copyright (c) 2012 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  * Copyright (c) 2012 Chris Pressey
  *
  * This program is free, do whatever you want with it.

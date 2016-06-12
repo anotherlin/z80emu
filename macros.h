@@ -42,7 +42,7 @@
  */
 
 #define R(r)            *((unsigned char *) (registers[(r)]))
-#define S(s)            *((unsigned char *) register_table[(s)])
+#define S(s)            *((unsigned char *) state->register_table[(s)])
 #define RR(rr)          *((unsigned short *) registers[(rr) + 8])
 #define SS(ss)          *((unsigned short *) registers[(ss) + 12])
 #define CC(cc)          ((F ^ XOR_CONDITION_TABLE[(cc)])                \
@@ -105,7 +105,7 @@
                                                 
 #define READ_INDIRECT_HL(x)                                             \
 {                                                                       \
-        if (registers == register_table) {                              \
+        if (registers == state->register_table) { 			\
                                                                         \
                 READ_BYTE(HL, (x));                                     \
                                                                         \
@@ -124,7 +124,7 @@
 
 #define WRITE_INDIRECT_HL(x)                                            \
 {                                                                       \
-        if (registers == register_table) {                              \
+        if (registers == state->register_table) {			\
                                                                         \
                 WRITE_BYTE(HL, (x));                                    \
                                                                         \
