@@ -381,7 +381,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 READ_BYTE(nn, A);
-
                                 break;
 
                         }
@@ -406,7 +405,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 WRITE_BYTE(nn, A);
-
                                 break;
 
                         }
@@ -471,7 +469,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 READ_WORD(nn, HL_IX_IY);
-
                                 break;
 
                         }
@@ -482,7 +479,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 READ_WORD(nn, RR(P(opcode)));
-
                                 break;
 
                         }
@@ -493,7 +489,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 WRITE_WORD(nn, HL_IX_IY);
-
                                 break;
 
                         }
@@ -504,7 +499,6 @@ emulate_next_instruction:
 
                                 READ_NN(nn);
                                 WRITE_WORD(nn, RR(P(opcode)));
-
                                 break;
 
                         }
@@ -785,7 +779,6 @@ emulate_next_instruction:
 
                                 break;
 
-
                         }                               
 
                         /* 8-bit arithmetic and logical group. */
@@ -803,7 +796,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 ADD(n);
-
                                 break;
 
                         }
@@ -814,7 +806,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 ADD(x);
-
                                 break;
 
                         }
@@ -832,7 +823,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 ADC(n);
-
                                 break;
 
                         }
@@ -843,7 +833,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 ADC(x);
-
                                 break;
 
                         }
@@ -861,7 +850,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 SUB(n);
-
                                 break;
 
                         }
@@ -872,7 +860,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 SUB(x);
-
                                 break;
 
                         }
@@ -890,7 +877,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 SBC(n);
-
                                 break;
 
                         }
@@ -901,7 +887,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 SBC(x);
-
                                 break;
 
                         }
@@ -919,7 +904,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 AND(n);
-
                                 break;
 
                         }
@@ -930,7 +914,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 AND(x);
-
                                 break;
 
                         }
@@ -948,7 +931,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 OR(n);
-
                                 break;
 
                         }
@@ -959,7 +941,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 OR(x);
-
                                 break;
 
                         }
@@ -977,7 +958,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 XOR(n);
-
                                 break;
 
                         }
@@ -988,7 +968,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 XOR(x);
-
                                 break;
 
                         }
@@ -1006,7 +985,6 @@ emulate_next_instruction:
 
                                 READ_N(n);
                                 CP(n);
-
                                 break;
 
                         }
@@ -1017,7 +995,6 @@ emulate_next_instruction:
 
                                 READ_INDIRECT_HL(x);
                                 CP(x);
-
                                 break;
 
                         }
@@ -1054,7 +1031,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 6;
 
                                 }
-
                                 break;
 
                         }
@@ -1091,7 +1067,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 6;
 
                                 }
-
                                 break;
 
                         }
@@ -1133,7 +1108,6 @@ emulate_next_instruction:
                         case CPL: {
 
                                 A = ~A;
-
                                 F = (F & (SZPV_FLAGS | Z80_C_FLAG))
                                         
 #ifndef Z80_DOCUMENTED_FLAGS_ONLY
@@ -1216,20 +1190,28 @@ emulate_next_instruction:
 #ifdef Z80_CATCH_HALT
 
                                 state->status = Z80_STATUS_FLAG_HALT;
-                                goto stop_emulation;
 
 #else
 
-                                pc--;
-                                break;
+				/* If an HALT instruction is executed, the Z80
+				 * keeps executing NOPs until an interrupt is
+				 * generated. Basically nothing happens for the
+				 * remaining number of cycle(s).
+				 */
+
+				if (elapsed_cycles < number_cycles)
+	
+					elapsed_cycles = number_cycles;
 
 #endif
+
+				goto stop_emulation;
 
                         }
 
                         case DI: {
 
-                                state->iff1 = state->iff2 = 0;
+				state->iff1 = state->iff2 = 0;
 
 #ifdef Z80_CATCH_DI
 
@@ -1250,7 +1232,6 @@ emulate_next_instruction:
                                  */
 
                                 number_cycles += 4;
-
                                 break;
 
 #endif                  
@@ -1271,7 +1252,6 @@ emulate_next_instruction:
                                 /* See comment for DI. */
 
                                 number_cycles += 4;
-
                                 break;
 
 #endif
@@ -1578,7 +1558,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1622,7 +1601,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1666,7 +1644,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1710,7 +1687,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1754,7 +1730,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1798,7 +1773,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1842,7 +1816,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -1971,7 +1944,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -2015,7 +1987,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 5;
 
                                 }
-
                                 break;
 
                         }
@@ -2059,6 +2030,7 @@ emulate_next_instruction:
                                 elapsed_cycles += 6;
 
                                 break;
+
                         }                               
 
                         case JR_E: {
@@ -2136,7 +2108,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 4;
 
                                 }
-
                                 break;
 
                         }
@@ -2182,7 +2153,6 @@ emulate_next_instruction:
                                         elapsed_cycles += 6;
 
                                 }
-
                                 break;
 
                         }
@@ -2544,7 +2514,7 @@ emulate_next_instruction:
                                  * are executed.
                                  */
 
-                                if (elapsed_cycles < number_cycles + 4) {
+                                if (elapsed_cycles < number_cycles) {
 
                                         Z80_FETCH_BYTE(pc, opcode);
                                         pc++;
@@ -2552,6 +2522,7 @@ emulate_next_instruction:
 
                                 } else {
 
+					state->status = Z80_STATUS_PREFIX;
                                         pc--;
                                         elapsed_cycles -= 4;
                                         goto stop_emulation;
@@ -2574,7 +2545,7 @@ emulate_next_instruction:
 
 #ifdef Z80_PREFIX_FAILSAFE
 
-                                if (elapsed_cycles < number_cycles + 4) {
+                                if (elapsed_cycles < number_cycles) {
 
                                         Z80_FETCH_BYTE(pc, opcode);
                                         pc++;
@@ -2582,8 +2553,7 @@ emulate_next_instruction:
 
                                 } else {
 
-                                        // check                
-
+					state->status = Z80_STATUS_PREFIX;
                                         pc--;
                                         elapsed_cycles -= 4;
                                         goto stop_emulation;

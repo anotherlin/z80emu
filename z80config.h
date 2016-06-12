@@ -46,7 +46,7 @@
  * problem if there is a long sequence of 0xdd and/or 0xfd prefixes. But if
  * Z80_PREFIX_FAILSAFE is defined, it will always be able to stop after at 
  * least numbers_cycles are executed, in which case Z80_STATE's status is set 
- * to Z80_STATUS_PREFIXED. Note that if the memory where the opcodes are read, 
+ * to Z80_STATUS_PREFIX. Note that if the memory where the opcodes are read, 
  * has wait states (slow memory), then the additional cycles for a one byte 
  * fetch (the non executed prefix) must be substracted. Even if it is safer, 
  * most program won't need this feature.
