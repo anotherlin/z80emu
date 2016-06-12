@@ -76,8 +76,9 @@ static const int OVERFLOW_TABLE[4] = {
 
 };
 
-static int      emulate (Z80_STATE * state, 
-			int number_cycles, int opcode,
+static int	emulate (Z80_STATE * state, 
+			int opcode,
+			int elapsed_cycles, int number_cycles,
 			void *context);
 
 void Z80Reset (Z80_STATE *state)
@@ -153,7 +154,7 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
 {
         state->status = 0;
         if (state->iff1) {
-
+				
                 state->iff1 = state->iff2 = 0;
                 state->r = (state->r & 0x80) | ((state->r + 1) & 0x7f);
                 switch (state->im) {
@@ -165,30 +166,37 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
                                  * should take 2 + 11 = 13 cycles.
                                  */
 
-                                return 2 
-				+ emulate(state, 4, data_on_bus, context);
+                                return emulate(state, 
+					data_on_bus, 
+					2, 4, 
+					context);
                                 
                         }
 
                         case Z80_INTERRUPT_MODE_1: {
 
+				int	elapsed_cycles;
+
+				elapsed_cycles = 0;
                                 SP -= 2;
                                 Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
                                 state->pc = 0x0038;
-                                return 13;
+                                return elapsed_cycles + 13;
 
                         }
 
                         case Z80_INTERRUPT_MODE_2:
                         default: {
 
+				int	elapsed_cycles;
+
+				elapsed_cycles = 0;
                                 SP -= 2;
                                 Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
                                 state->pc = 
                                         (state->i << 8 | data_on_bus) 
                                         & 0xfffe;
-
-                                return 19;
+                                return elapsed_cycles + 19;
                                 
                         }
 
@@ -201,29 +209,35 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
 
 int Z80NonMaskableInterrupt (Z80_STATE *state, void *context)
 {
+	int	elapsed_cycles;
+
         state->status = 0;
 
         state->iff2 = state->iff1;
         state->iff1 = 0;
         state->r = (state->r & 0x80) | ((state->r + 1) & 0x7f);
 
+	elapsed_cycles = 0;
         SP -= 2;
         Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
         state->pc = 0x0066;
         
-        return 11;
+        return elapsed_cycles + 11;
 }
 
 int Z80Emulate (Z80_STATE *state, int number_cycles, void *context)
 {
-        int     elapsed_cycles, opcode;
+        int     elapsed_cycles, pc, opcode;
+	void    **registers; 
 
         state->status = 0;
 	elapsed_cycles = 0;
-        Z80_FETCH_BYTE(state->pc, opcode);
-        state->pc++;
+	registers = state->register_table;
+	pc = state->pc;
+        Z80_FETCH_BYTE(pc, opcode);
+        state->pc = pc + 1;
 
-        return elapsed_cycles + emulate(state, number_cycles, opcode, context);
+        return emulate(state, opcode, elapsed_cycles, number_cycles, context);
 }
 
 /* Actual emulation function. opcode is the first opcode to emulate, this is 
@@ -231,15 +245,14 @@ int Z80Emulate (Z80_STATE *state, int number_cycles, void *context)
  */
 
 static int emulate (Z80_STATE * state, 
-	int number_cycles, int opcode, 
+	int opcode, 
+	int elapsed_cycles, int number_cycles, 
 	void *context)
 {
-        int     elapsed_cycles, pc, r;
-                
-        elapsed_cycles = 0;
+        int	pc, r;
+
         pc = state->pc;
         r = state->r & 0x7f;
-
         goto start_emulation;
 
         for ( ; ; ) {   
