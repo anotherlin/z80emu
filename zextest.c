@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "zextest.h"
 #include "z80emu.h"
 
@@ -20,17 +21,22 @@
 static void	emulate (char *filename);
 
 int main (void)
-
 {
+	time_t	start, stop;
+
+	start = time(NULL);
         emulate("testfiles/zexdoc.com");
         emulate("testfiles/zexall.com");        
+	stop = time(NULL);
+	printf("Emulating zexdoc and zexall took a total of %d second(s).\n",
+		(int) (stop - start));
+
         return EXIT_SUCCESS;
 }
 
 /* Emulate "zexdoc.com" or "zexall.com". */
 
 static void emulate (char *filename)
-
 {
         FILE   	*file;
         long   	l;
@@ -54,7 +60,7 @@ static void emulate (char *filename)
 
         /* Patch memory of the program. Reset at 0x0000 is trapped by an OUT
          * which will stop emulation. CP/M bdos call 5 is trapped by an IN. See
-         * Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() definitions in z80emu.h.
+         * Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() definitions in z80user.h.
          */
 
         context.memory[0] = 0xd3;       /* OUT N, A */
@@ -92,21 +98,21 @@ static void emulate (char *filename)
  * (output $-terminated string to screen).
  */
 
-void SystemCall (ZEXTEST *context)
+void SystemCall (ZEXTEST *zextest)
 {
-        if (context->state.registers.byte[Z80_C] == 2)
+        if (zextest->state.registers.byte[Z80_C] == 2)
 
-                printf("%c", context->state.registers.byte[Z80_E]);
+                printf("%c", zextest->state.registers.byte[Z80_E]);
 
-        else if (context->state.registers.byte[Z80_C] == 9) {
+        else if (zextest->state.registers.byte[Z80_C] == 9) {
 
                 int     i, c;
 
-                for (i = context->state.registers.word[Z80_DE], c = 0; 
-                        context->memory[i] != '$';
+                for (i = zextest->state.registers.word[Z80_DE], c = 0; 
+                        zextest->memory[i] != '$';
                         i++) {
 
-                        printf("%c", context->memory[i & 0xffff]);
+                        printf("%c", zextest->memory[i & 0xffff]);
                         if (c++ > MAXIMUM_STRING_LENGTH) {
 
                                 fprintf(stderr,

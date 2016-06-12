@@ -18,7 +18,7 @@ typedef struct ZEXTEST {
 
 } ZEXTEST;
 
-extern void     SystemCall (ZEXTEST *context);
+extern void     SystemCall (ZEXTEST *zextest);
 
 #define __ZEXTEST_INCLUDED__
 

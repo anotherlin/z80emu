@@ -1,7 +1,7 @@
 /* maketables.c
  * Instructions and flags tables generator.
  *
- * Copyright (c) 2012 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  * 
  * This program is free, do whatever you want with it.
  */

@@ -1,6 +1,6 @@
 /* z80emu.h
  * Main header of z80emu. Don't modify this file directly. Use z80config.h and
- * z80user.h to customize the emulator for your need. 
+ * z80user.h to customize the emulator to your need. 
  *
  * Copyright (c) 2012-2016 Lin Ke-Fong
  *
@@ -145,32 +145,30 @@ typedef struct Z80_STATE {
 
 } Z80_STATE;
 
-/* Initialize processor's state to power-on default and reset status. */
+/* Initialize processor's state to power-on default. */
 
 extern void     Z80Reset (Z80_STATE *state);
 
 /* Trigger an interrupt according to the current interrupt mode and return the
- * number of cycles required to accept it. If maskable interrupts are disabled,
- * this will return zero. Z80_STATE's status is updated. In interrupt mode 0,
- * data_on_bus must be a single byte opcode.
+ * number of cycles elapsed to accept it. If maskable interrupts are disabled,
+ * this will return zero. In interrupt mode 0, data_on_bus must be a single 
+ * byte opcode.
  */
 
 extern int      Z80Interrupt (Z80_STATE *state, 
 			int data_on_bus, 
 			void *context);
 
-/* Trigger a non maskable interrupt, return the number of cycles needed to
- * accept it. Z80_STATE's status is reset.
+/* Trigger a non maskable interrupt, then return the number of cycles elapsed
+ * to accept it.
  */
 
 extern int      Z80NonMaskableInterrupt (Z80_STATE *state, void *context);
 
-/* Emulate a Z80 processor for number_cycles cycles, which must be greater or
- * equal to 4. Return the number of emulated cycles, this number will be equal
- * to number_cycles or be slightly greater (most probable case). It will be
- * less if the emulation has been interrupted. Z80_STATE's status member is
- * reset at the start of the emulation. If the emulation is interrupted, it may
- * indicate the reason why.
+/* Execute instructions as long as the number of elapsed cycles is smaller than
+ * number_cycles, and return the number of cycles emulated. The emulator can be
+ *  set to stop early on some conditions (see z80config.h). The user macros 
+ * (see z80user.h) can also control the emulation.
  */
 
 extern int      Z80Emulate (Z80_STATE *state, 

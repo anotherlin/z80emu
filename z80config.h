@@ -45,25 +45,26 @@
 /* The emulator cannot be stopped between prefixed opcodes. This can be a 
  * problem if there is a long sequence of 0xdd and/or 0xfd prefixes. But if
  * Z80_PREFIX_FAILSAFE is defined, it will always be able to stop after at 
- * least the requested numbers cycles are executed, in which case Z80_STATE's 
- * status is set to Z80_STATUS_PREFIXED. Note that if the memory where the
- * opcodes are read, has wait states (slow memory), then the additional cycles
- * for a one byte fetch (the non executed prefix) must be substracted. Most
- * program won't need this feature, even if it is safer.  
+ * least numbers_cycles are executed, in which case Z80_STATE's status is set 
+ * to Z80_STATUS_PREFIXED. Note that if the memory where the opcodes are read, 
+ * has wait states (slow memory), then the additional cycles for a one byte 
+ * fetch (the non executed prefix) must be substracted. Even if it is safer, 
+ * most program won't need this feature.
  */
 
 /* #define Z80_PREFIX_FAILSAFE */
      
 /* By defining this macro, the emulator will always fetch the displacement or 
  * address of a conditionnal jump or call instruction, even if the condition 
- * is false and the fetch can be avoided.
+ * is false and the fetch can be avoided. Define this macro if you need to 
+ * account for memory wait states on code read.
  */
 
 /* #define Z80_FALSE_CONDITION_FETCH */
 
 /* It may be possible to overwrite the opcode of the currently executing LDIR, 
- * LDDR, INIR, or OTDR instruction. Define this macro, if you need to handle 
- * those pathological cases.
+ * LDDR, INIR, or OTDR instruction. Define this macro if you need to handle 
+ * these pathological cases.
  */
 
 /* #define Z80_HANDLE_SELF_MODIFYING_CODE */

@@ -1,7 +1,7 @@
 /* macros.h
  * Helper macros definitions.
  *
- * Copyright (c) 2012-2014 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  *
  * This program is free, do whatever you want with it.
  */
@@ -105,7 +105,7 @@
                                                 
 #define READ_INDIRECT_HL(x)                                             \
 {                                                                       \
-        if (registers == state->register_table) { 			\
+        if (registers == state->register_table) {			\
                                                                         \
                 READ_BYTE(HL, (x));                                     \
                                                                         \

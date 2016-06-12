@@ -36,21 +36,21 @@ extern "C" {
  * All macros have access to the following three variables:
  *
  *      state           Pointer to the current Z80_STATE. Because the 
- *			instruction is currently executing, members may not be 
- *			fully up to date, depending on when the macro is called
- *			during the process. It is rather suggested to access 
+ *			instruction is currently executing, its members may not
+ *			be fully up to date, depending on when the macro is 
+ *			called in the process. It is rather suggested to access 
  *			the state only when the emulator is stopped. 
  *
  *      elapsed_cycles  Number of cycles emulated. If needed, you may add wait 
  *			states to it for slow memory accesses. Because the 
  *			macros are called during the execution of the current 
- *			instruction, this number is only correct up to the 
+ *			instruction, this number is only precise up to the 
  *			previous one.
  *
  *	context 	This is the (void *) context passed to the emulation 
  *			functions.
  *
- * Except for Z80_WRITE_WORD_INTERRUPT, all macros have access to: 
+ * Except for Z80_WRITE_WORD_INTERRUPT, all macros also have access to: 
  *
  *      number_cycles   Number of cycles to emulate. After executing each
  *			instruction, the emulator checks if elapsed_cycles is
@@ -66,15 +66,14 @@ extern "C" {
  *				state->dd_register_table for 0xdd prefixes; 
  *                      	state->fd_register_table for 0xfd prefixes;
  *				state->register_table otherwise.
- // fetch *
+ *
  *      pc              Current PC register (upper bits are undefined), points
- *                      on opcode, the displacement or constant to read for
-p
+ *                      on the opcode, the displacement or constant to read for
  *                      Z80_FETCH_BYTE() and Z80_FETCH_WORD(), or on the next
  *                      instruction otherwise.
  *
- * Except for Z80_FETCH_BYTE() and Z80_FETCH_WORD(), memory access and I/O 
- * macros can know which instruction is currently executing:
+ * Except for Z80_FETCH_BYTE(), Z80_FETCH_WORD(), and Z80_WRITE_WORD_INTERRUPT,
+ * all other macros can know which instruction is currently executing:
  *
  *      opcode          Opcode of the currently executing instruction.
  *
@@ -83,8 +82,8 @@ p
  */
 
 /* Here are macros for emulating zextest. Read/write memory macros have been 
- * written for a linear 64k RAM. Input/output port macros are used to simulate 
- * system calls. 
+ * written for a linear 64k RAM. Input/output port macros have been used as 
+ * "traps" to simulate system calls. 
  */
 
 #include "zextest.h"
@@ -94,7 +93,7 @@ p
         (x) = ((ZEXTEST *) context)->memory[(address) & 0xffff];	\
 }
 
-#define Z80_FETCH_BYTE(address, x)	Z80_READ_BYTE((address), (x))
+#define Z80_FETCH_BYTE(address, x)		Z80_READ_BYTE((address), (x))
 
 #define Z80_READ_WORD(address, x)                                       \
 {                                                                       \
@@ -105,7 +104,7 @@ p
                 | (memory[((address) + 1) & 0xffff] << 8);              \
 }
 
-#define Z80_FETCH_WORD(address, x)	Z80_READ_WORD((address), (x))
+#define Z80_FETCH_WORD(address, x)		Z80_READ_WORD((address), (x))
 
 #define Z80_WRITE_BYTE(address, x)                                      \
 {                                                                       \
@@ -131,8 +130,8 @@ p
 
 #define Z80_OUTPUT_BYTE(port, x)                                        \
 {                                                                       \
-        number_cycles = 0;                                              \
         ((ZEXTEST *) context)->is_done = !0; 				\
+        number_cycles = 0;                                              \
 }
 
 #ifdef __cplusplus

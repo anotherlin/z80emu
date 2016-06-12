@@ -218,13 +218,12 @@ int Z80Emulate (Z80_STATE *state, int number_cycles, void *context)
 {
         int     elapsed_cycles, opcode;
 
+        state->status = 0;
 	elapsed_cycles = 0;
         Z80_FETCH_BYTE(state->pc, opcode);
         state->pc++;
 
-        state->status = 0;
-
-        return emulate(state, number_cycles, opcode, context);
+        return elapsed_cycles + emulate(state, number_cycles, opcode, context);
 }
 
 /* Actual emulation function. opcode is the first opcode to emulate, this is 
