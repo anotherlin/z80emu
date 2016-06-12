@@ -1196,7 +1196,7 @@ emulate_next_instruction:
 				/* If an HALT instruction is executed, the Z80
 				 * keeps executing NOPs until an interrupt is
 				 * generated. Basically nothing happens for the
-				 * remaining number of cycle(s).
+				 * remaining number of cycles.
 				 */
 
 				if (elapsed_cycles < number_cycles)
