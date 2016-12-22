@@ -11,25 +11,21 @@ zexall Z80 instruction exerciser tests. Code is pure ANSI C.
 The Makefile will compile a sample program to run zexdoc.com and zexall.com.
 Only needed CP/M BIOS functions are emulated. See zextest.c for details.
  
-All structures and functions are documented in the code. To use z80emu in your 
-own programs, modify z80config.h to configure the emulator, and write the memory
-read/write and port input/output macros 
-interface 
-
-you just have to modify z80emu.h to customize it to your needs. 
-Memory read/write and in/out macros are written for zextest.c. Rewrite them for
-the system you want to emulate. You shouldn't need to modify z80emu.c or any 
-other files.
+All structures and functions are documented in the code, please read the header
+files. To use z80emu in your programs, modify z80config.h to configure the 
+emulator, and in z80user.h, write the memory read/write and port input/output 
+macros to interface with your system to emulate. The macros for zextest.c are 
+simple examples. You shouldn't have to modify z80emu.c or any other files.
  
 z80emu works a little bit differently from other emulators. Instead of a switch
 case for all opcodes, it converts them to "generic" instructions and then do
 the switch case. Registers and operands are then decoded during execution. All 
 of this is done using several tables (see maketables.c). The code is more 
-compact, which should make it fit inside L1 instruction cache. 
+compact, which should make it fit inside L1 instruction cache.
  
 You may find further information regarding the Z80 on http://www.z80.info. This
 emulator is heavily based on the information found on this website. And I would
-like to thank all the contributors. In particular, Sean Young for "The 
+like to thank all its contributors. In particular, Sean Young for "The 
 Undocumented Z80 Documented" and Christian Dinu for "Decoding Z80 Opcodes". The
 zexdoc and zexall programs have been written by Frank D. Cringles.
  
@@ -38,7 +34,7 @@ Rousseau for review and testing.
  
 Sebastien Katz, Pierre Rousseau, and Thibaut Mattern made me start this project
 as part of a Sega Master System console emulator. That was long ago, back at
-university. I hope I will complete it someday.
+university. I hope I will complete a full emulator someday.
  
 Feel free to send bug reports, comments, and suggestions to:
  
@@ -46,11 +42,20 @@ anotherlin@gmail.com
  
 Revision history:
  
-1.1.0 (22th December 2016)
+1.1.0 "first-app" (22th December 2016)
+
+Ten years already! But hopefully, work on the Sega Master System emulator has 
+restarted. For the first application of z80emu, redesign its user API, the
+original being really bad. Add 2 header files for the user to customize instead
+of having to modify z80emu.h, update the documentation: make it clear what 
+variables each macro can expect, compute the register decoding tables only once
+at reset, and add a (void *) context for interfacing with the system to 
+emulate. All these changes should make the API better organized and easier to 
+use. 
  
 1.0.2 (12th February 2014)
  
-Conditional relative jump (JR_DD_E) instructions such as "jr NZ, myLoopLabel"
+Conditional relative jump (JR_DD_E) instructions such as "jr NZ, loop_label"
 were not decoded correctly, just a silly bug in a macro to extract bits. The 
 zexdoc and zexall exercisers have excellent coverage of ALU instructions, but
 they both don't feature a single "JR" instruction! Hence this (very obvious)
