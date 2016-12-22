@@ -1,7 +1,7 @@
 /* macros.h
  * Helper macros definitions.
  *
- * Copyright (c) 2012, 2014, 2016 Lin Ke-Fong
+ * Copyright (c) 2012-2016 Lin Ke-Fong
  *
  * This code is free, do whatever you want with it.
  */
