@@ -18,3 +18,6 @@ OBJECT_FILES = zextest.o z80emu.o
 
 zextest: $(OBJECT_FILES)
 	$(CC) $(OBJECT_FILES) -o $@
+
+clean:
+	rm -f *.o zextest maketables
