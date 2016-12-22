@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2016 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 #ifndef __Z80USER_INCLUDED__
@@ -23,7 +23,7 @@ extern "C" {
  * value in the endianness of the host processor. 
  *
  * Z80_READ_BYTE(), Z80_WRITE_BYTE(), Z80_READ_WORD(), and Z80_WRITE_WORD()
- * are used for general memory access. They obey the same rule as the code 
+ * are used for general memory access. They obey the same rules as the code 
  * reading macros. The upper bits of the value x to write may be non-zero.
  * Z80_WRITE_WORD_INTERRUPT() is same as Z80_WRITE_WORD(), except it is only 
  * used for interrupt generation.
@@ -81,8 +81,8 @@ extern "C" {
  *                      instructions.h for a list.
  */
 
-/* Here are macros for emulating zextest. Read/write memory macros have been 
- * written for a linear 64k RAM. Input/output port macros have been used as 
+/* Here are macros for emulating zexdoc and zexall. Read/write memory macros
+ * are written for a linear 64k RAM. Input/output port macros are used as 
  * "traps" to simulate system calls. 
  */
 
@@ -124,7 +124,6 @@ extern "C" {
 
 #define Z80_INPUT_BYTE(port, x)                                         \
 {                                                                       \
-        (x) = 0;                /* Make compiler happy. */              \
         SystemCall((ZEXTEST *) context);				\
 }
 

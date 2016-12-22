@@ -1,9 +1,9 @@
 /* macros.h
  * Helper macros definitions.
  *
- * Copyright (c) 2012-2016 Lin Ke-Fong
+ * Copyright (c) 2012, 2016 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 /* Shortcuts for flags and registers. */

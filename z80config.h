@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2016 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 #ifndef __Z80CONFIG_INCLUDED__

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2012 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it. 
+ * This code is free, do whatever you want with it. 
  */
 
 /* Some "instructions" handle two opcodes hence they need their encodings to

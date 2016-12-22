@@ -2,10 +2,10 @@
  * Example program using z80emu to run the zexall and zexdoc tests. This will 
  * check if the Z80 is correctly emulated.
  *
- * Copyright (c) 2012-2016 Lin Ke-Fong
+ * Copyright (c) 2012, 2016 Lin Ke-Fong
  * Copyright (c) 2012 Chris Pressey
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 #include <stdio.h>
@@ -58,9 +58,9 @@ static void emulate (char *filename)
 
         fclose(file);
 
-        /* Patch memory of the program. Reset at 0x0000 is trapped by an OUT
-         * which will stop emulation. CP/M bdos call 5 is trapped by an IN. See
-         * Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() definitions in z80user.h.
+        /* Patch the memory of the program. Reset at 0x0000 is trapped by an
+         * OUT which will stop emulation. CP/M bdos call 5 is trapped by an IN.
+	 * See Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() definitions in z80user.h.
          */
 
         context.memory[0] = 0xd3;       /* OUT N, A */
@@ -77,14 +77,11 @@ static void emulate (char *filename)
         Z80Reset(&context.state);
         context.state.pc = 0x100;
         total = 0.0;
-        for ( ; ; ) {
+	do
 
                 total += Z80Emulate(&context.state, CYCLES_PER_STEP, &context);
-                if (context.is_done)
 
-                        break;
-
-        }
+	while (!context.is_done);
         printf("\n%.0f cycle(s) emulated.\n" 
                 "For a Z80 running at %.2fMHz, "
                 "that would be %d second(s) or %.2f hour(s).\n",

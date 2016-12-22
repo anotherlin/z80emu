@@ -2,9 +2,9 @@
  * Main header of z80emu. Don't modify this file directly. Use z80config.h and
  * z80user.h to customize the emulator to your need. 
  *
- * Copyright (c) 2012-2016 Lin Ke-Fong
+ * Copyright (c) 2012, 2016 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 #ifndef __Z80EMU_INCLUDED__
@@ -167,8 +167,8 @@ extern int      Z80NonMaskableInterrupt (Z80_STATE *state, void *context);
 
 /* Execute instructions as long as the number of elapsed cycles is smaller than
  * number_cycles, and return the number of cycles emulated. The emulator can be
- *  set to stop early on some conditions (see z80config.h). The user macros 
- * (see z80user.h) can also control the emulation.
+ * set to stop early on some conditions (see z80config.h). The user macros 
+ * (see z80user.h) also control the emulation.
  */
 
 extern int      Z80Emulate (Z80_STATE *state, 

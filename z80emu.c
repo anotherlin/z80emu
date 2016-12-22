@@ -1,9 +1,9 @@
 /* z80emu.c
  * Z80 processor emulator. 
  *
- * Copyright (c) 2012-2016 Lin Ke-Fong
+ * Copyright (c) 2012, 2016 Lin Ke-Fong
  *
- * This program is free, do whatever you want with it.
+ * This code is free, do whatever you want with it.
  */
 
 #include "z80emu.h"
@@ -228,11 +228,9 @@ int Z80NonMaskableInterrupt (Z80_STATE *state, void *context)
 int Z80Emulate (Z80_STATE *state, int number_cycles, void *context)
 {
         int     elapsed_cycles, pc, opcode;
-	void    **registers; 
 
         state->status = 0;
 	elapsed_cycles = 0;
-	registers = state->register_table;
 	pc = state->pc;
         Z80_FETCH_BYTE(pc, opcode);
         state->pc = pc + 1;
