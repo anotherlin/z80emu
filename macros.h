@@ -1,7 +1,7 @@
 /* macros.h
  * Helper macros definitions.
  *
- * Copyright (c) 2012-2016 Lin Ke-Fong
+ * Copyright (c) 2012-2017 Lin Ke-Fong
  *
  * This code is free, do whatever you want with it.
  */
@@ -68,7 +68,7 @@
 #define READ_D(d)                                                       \
 {                                                                       \
         Z80_FETCH_BYTE(pc, (d));                                        \
-        (d) = (char) (d);                                               \
+        (d) = (signed char) (d);					\
         pc++;                                                           \
         elapsed_cycles += 3;                                            \
 }
@@ -364,7 +364,7 @@
         int     c;                                                      \
                                                                         \
         c = (x) & 0x01;                                                 \
-        (x) = ((char) (x)) >> 1;                                        \
+        (x) = ((signed char) (x)) >> 1;  				\
         F = SZYXP_FLAGS_TABLE[(x) & 0xff] | c;                          \
 }
         
