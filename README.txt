@@ -41,6 +41,15 @@ Feel free to send bug reports, comments, and suggestions to:
 anotherlin@gmail.com
  
 Revision history:
+
+1.1.1 (28th February 2017)
+
+I made the wrong assumption that char is signed by default. It is in fact 
+implementation (compiler) dependent. So explicit (signed char) casts are now
+used instead. Otherwise, with unsigned char compilers, the zextests will have
+a few failing CRC checks. In fact, relative jumps will also fail to emulate 
+correctly. Thank you SmallRoomLabs for finding and reporting this issue, and 
+Mark Allender for verifying it.
  
 1.1.0 "first-app" (22th December 2016)
 
@@ -59,13 +68,13 @@ Conditional relative jump (JR_DD_E) instructions such as "jr NZ, loop_label"
 were not decoded correctly, just a silly bug in a macro to extract bits. The 
 zexdoc and zexall exercisers have excellent coverage of ALU instructions, but
 they both don't feature a single "JR" instruction! Hence this (very obvious)
-bug has gone unnoticed. Thank you Marcelo Dantas (marcelo.f.dantas@gmail.com).
+bug has gone unnoticed. Thank you Marcelo Dantas.
  
 1.0.1 (14th November 2012)
  
 Original implementation of zextest used int64_t. In retrospect, this was a poor 
 choice. Using double to count cycles is ANSI and has more than enough precision 
-to do so. Thank you Chris Pressey (cpressey@gmail.com).
+to do so. Thank you Chris Pressey.
  
 1.0.0 (13th March 2012)
  
