@@ -1,7 +1,7 @@
 z80emu
-Version 1.1.0
+Version 1.1.1
 
-Copyright (c) 2012-2016 Lin Ke-Fong
+Copyright (c) 2012-2017 Lin Ke-Fong
  
 z80emu is a free portable Z80 processor emulator. Its performance is comparable
 to other Z80 emulators. It emulates all undocumented features as described in 
