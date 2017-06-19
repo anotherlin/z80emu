@@ -42,6 +42,13 @@ anotherlin@gmail.com
  
 Revision history:
 
+1.1.2 (19th June 2017)
+
+The implementation of the "IM" Interrupt Mode selection instruction was 
+completely wrong. The zextests don't check it and it seems that it was never
+encountered in the few systems emulated so far. This was unnoticed until now.
+Thank you Chris Despoinidis for reporting that bug.
+
 1.1.1 (28th February 2017)
 
 I made the wrong assumption that char is signed by default. It is in fact 
