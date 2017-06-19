@@ -1,5 +1,5 @@
 z80emu
-Version 1.1.1
+Version 1.1.2
 
 Copyright (c) 2012-2017 Lin Ke-Fong
  
@@ -42,12 +42,12 @@ anotherlin@gmail.com
  
 Revision history:
 
-1.1.2 (19th June 2017)
+1.1.2 (20th June 2017)
 
 The implementation of the "IM" Interrupt Mode selection instruction was 
 completely wrong. The zextests don't check it and it seems that it was never
-encountered in the few systems emulated so far. This was unnoticed until now.
-Thank you Chris Despoinidis for reporting that bug.
+encountered in the few systems emulated so far. This bug has gone unnoticed 
+until now. Thank you Chris Despoinidis for reporting that bug.
 
 1.1.1 (28th February 2017)
 
