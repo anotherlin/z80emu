@@ -1261,12 +1261,12 @@ emulate_next_instruction:
                                 /* "IM 0/1" (0xed prefixed opcodes 0x4e and
                                  * 0x6e) is treated like a "IM 0".
                                  */
-
-                                if (!(Y(opcode) & 0x04))
+		
+				if ((Y(opcode) & 0x03) <= 0x01)
 
                                         state->im = Z80_INTERRUPT_MODE_0;
 
-                                else if (!(Y(opcode) & 0x02))
+                                else if (!(Y(opcode) & 1))
 
                                         state->im = Z80_INTERRUPT_MODE_1;
 
