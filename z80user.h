@@ -2,7 +2,7 @@
  * Add your code here to interface the emulated system with z80emu. See towards
  * the end of the file for an example for running zextest.
  *
- * Copyright (c) 2016 Lin Ke-Fong
+ * Copyright (c) 2016, 2017 Lin Ke-Fong
  *
  * This code is free, do whatever you want with it.
  */
@@ -25,8 +25,9 @@ extern "C" {
  * Z80_READ_BYTE(), Z80_WRITE_BYTE(), Z80_READ_WORD(), and Z80_WRITE_WORD()
  * are used for general memory access. They obey the same rules as the code 
  * reading macros. The upper bits of the value x to write may be non-zero.
- * Z80_WRITE_WORD_INTERRUPT() is same as Z80_WRITE_WORD(), except it is only 
- * used for interrupt generation.
+ * Z80_READ_WORD_INTERRUPT() and Z80_WRITE_WORD_INTERRUPT() are same as 
+ * respectively Z80_READ_WORD() and Z80_WRITE_WORD(), except they are only used
+ * for interrupt generation.
  * 
  * Z80_INPUT_BYTE() and Z80_OUTPUT_BYTE() are for input and output. The upper
  * bits of the port number to read or write are always zero. The input byte x 
@@ -50,7 +51,8 @@ extern "C" {
  *	context 	This is the (void *) context passed to the emulation 
  *			functions.
  *
- * Except for Z80_WRITE_WORD_INTERRUPT, all macros also have access to: 
+ * Except for Z80_READ_WORD_INTERRUPT and Z80_WRITE_WORD_INTERRUPT, all macros 
+ * also have access to: 
  *
  *      number_cycles   Number of cycles to emulate. After executing each
  *			instruction, the emulator checks if elapsed_cycles is
@@ -72,8 +74,9 @@ extern "C" {
  *                      Z80_FETCH_BYTE() and Z80_FETCH_WORD(), or on the next
  *                      instruction otherwise.
  *
- * Except for Z80_FETCH_BYTE(), Z80_FETCH_WORD(), and Z80_WRITE_WORD_INTERRUPT,
- * all other macros can know which instruction is currently executing:
+ * Except for Z80_FETCH_BYTE(), Z80_FETCH_WORD(), Z80_READ_WORD_INTERRUPT, and 
+ * Z80_WRITE_WORD_INTERRUPT, all other macros can know which instruction is 
+ * currently executing:
  *
  *      opcode          Opcode of the currently executing instruction.
  *
@@ -119,6 +122,8 @@ extern "C" {
         memory[(address) & 0xffff] = (x); 				\
         memory[((address) + 1) & 0xffff] = (x) >> 8; 			\
 }
+
+#define Z80_READ_WORD_INTERRUPT(address, x)	Z80_READ_WORD((address), (x))
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)	Z80_WRITE_WORD((address), (x))
 

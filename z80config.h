@@ -1,7 +1,7 @@
 /* z80config.h 
  * Define or comment out macros in this file to configure the emulator. 
  *
- * Copyright (c) 2016 Lin Ke-Fong
+ * Copyright (c) 2016, 2017 Lin Ke-Fong
  *
  * This code is free, do whatever you want with it.
  */
@@ -68,5 +68,15 @@
  */
 
 /* #define Z80_HANDLE_SELF_MODIFYING_CODE */
+
+/* For interrupt mode 2, bit 0 of the 16-bit address to the interrupt vector 
+ * can be masked to zero. Some documentation states that this bit is forced to 
+ * zero. For instance, Zilog's application note about interrupts, states that
+ * "only 7 bits are required" and "the least significant bit is zero". Yet, 
+ * this is quite unclear, even from Zilog's manuals. So this is left as an 
+ * option.
+ */
+
+/* #define Z80_MASK_IM2_VECTOR_ADDRESS */
 
 #endif

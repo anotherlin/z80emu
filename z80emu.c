@@ -188,14 +188,20 @@ int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
                         case Z80_INTERRUPT_MODE_2:
                         default: {
 
-				int	elapsed_cycles;
+				int	elapsed_cycles, vector;
 
 				elapsed_cycles = 0;
                                 SP -= 2;
                                 Z80_WRITE_WORD_INTERRUPT(SP, state->pc);
-                                state->pc = 
-                                        (state->i << 8 | data_on_bus) 
-                                        & 0xfffe;
+				vector = state->i << 8 | data_on_bus;
+
+#ifdef Z80_MASK_IM2_VECTOR_ADDRESS
+
+                                vector &= 0xfffe;
+
+#endif
+
+				Z80_READ_WORD_INTERRUPT(vector, state->pc);
                                 return elapsed_cycles + 19;
                                 
                         }
