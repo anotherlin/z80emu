@@ -1,5 +1,5 @@
 z80emu
-Version 1.1.2
+Version 1.1.3
 
 Copyright (c) 2012-2017 Lin Ke-Fong
  
@@ -41,6 +41,12 @@ Feel free to send bug reports, comments, and suggestions to:
 anotherlin@gmail.com
  
 Revision history:
+
+1.1.3 (18th September 2017)
+
+Another gross mistake fixed in the interrupt handling code: In mode 2, the 
+interrupt vector wasn't dereferenced! Thank you rootednode for finding and
+reporting this issue.
 
 1.1.2 (20th June 2017)
 
