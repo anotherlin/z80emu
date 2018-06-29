@@ -127,7 +127,7 @@ extern "C" {
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)	Z80_WRITE_WORD((address), (x))
 
-#define Z80_INPUT_BYTE(port, x)                                         \
+#define Z80_INPUT_BYTE(portLow, portHigh, x)               \
 {                                                                       \
         SystemCall((ZEXTEST *) context);				\
 }
