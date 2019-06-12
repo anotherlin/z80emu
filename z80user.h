@@ -127,12 +127,12 @@ extern "C" {
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)	Z80_WRITE_WORD((address), (x))
 
-#define Z80_INPUT_BYTE(port, x)                                         \
+#define Z80_INPUT_BYTE(portLow, portHigh, x)               \
 {                                                                       \
         SystemCall((ZEXTEST *) context);				\
 }
 
-#define Z80_OUTPUT_BYTE(port, x)                                        \
+#define Z80_OUTPUT_BYTE(portLow, portHigh, x)                                        \
 {                                                                       \
         ((ZEXTEST *) context)->is_done = !0; 				\
         number_cycles = 0;                                              \
