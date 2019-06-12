@@ -2373,7 +2373,7 @@ emulate_next_instruction:
                                 int     n;
 
                                 READ_N(n);
-                                Z80_OUTPUT_BYTE(n, A);
+                                Z80_OUTPUT_BYTE(n, A, A);
 
                                 elapsed_cycles += 4;
 
@@ -2388,7 +2388,7 @@ emulate_next_instruction:
                                 x = Y(opcode) != INDIRECT_HL
                                         ? R(Y(opcode))
                                         : 0;
-                                Z80_OUTPUT_BYTE(C, x);
+                                Z80_OUTPUT_BYTE(C, B, x);
 
                                 elapsed_cycles += 4;
 
@@ -2401,7 +2401,7 @@ emulate_next_instruction:
                                 int     x, f;
 
                                 READ_BYTE(HL, x);
-                                Z80_OUTPUT_BYTE(C, x);
+                                Z80_OUTPUT_BYTE(C, B, x);
 
                                 HL += opcode == OPCODE_OUTI ? +1 : -1;
 
@@ -2433,7 +2433,7 @@ emulate_next_instruction:
                                         r += 2;
 
                                         Z80_READ_BYTE(hl, x);
-                                        Z80_OUTPUT_BYTE(C, x);
+                                        Z80_OUTPUT_BYTE(C, B, x);
 
                                         hl += d;
                                         if (--b) 

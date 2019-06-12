@@ -132,7 +132,7 @@ extern "C" {
         SystemCall((ZEXTEST *) context);				\
 }
 
-#define Z80_OUTPUT_BYTE(port, x)                                        \
+#define Z80_OUTPUT_BYTE(portLow, portHigh, x)                                        \
 {                                                                       \
         ((ZEXTEST *) context)->is_done = !0; 				\
         number_cycles = 0;                                              \
