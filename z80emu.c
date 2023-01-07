@@ -81,15 +81,9 @@ static int	emulate (Z80_STATE * state,
 			int elapsed_cycles, int number_cycles,
 			void *context);
 
-void Z80Reset (Z80_STATE *state)
+void Z80ResetTable (Z80_STATE *state)
 {
         int     i;
-        
-        state->status = 0;
-        AF = 0xffff;
-        SP = 0xffff;
-        state->i = state->pc = state->iff1 = state->iff2 = 0;
-        state->im = Z80_INTERRUPT_MODE_0;
         
         /* Build register decoding tables for both 3-bit encoded 8-bit
          * registers and 2-bit encoded 16-bit registers. When an opcode is 
@@ -148,6 +142,18 @@ void Z80Reset (Z80_STATE *state)
         state->fd_register_table[6] = &state->registers.word[Z80_IY];
         state->fd_register_table[10] = &state->registers.word[Z80_IY];
         state->fd_register_table[14] = &state->registers.word[Z80_IY];        
+}
+
+void Z80Reset (Z80_STATE *state)
+{
+        state->status = 0;
+        AF = 0xffff;
+        /* miss: BC, DE, HL, AF', BC', DE', HL', IX, IY, R */
+        SP = 0xffff;
+        state->i = state->pc = state->iff1 = state->iff2 = 0;
+        state->im = Z80_INTERRUPT_MODE_0;
+
+        Z80ResetTable (state);
 }
 
 int Z80Interrupt (Z80_STATE *state, int data_on_bus, void *context)
@@ -2006,6 +2012,7 @@ emulate_next_instruction:
 
                                 elapsed_cycles += 6;
 
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2033,6 +2040,7 @@ emulate_next_instruction:
 
                                 elapsed_cycles += 6;
 
+                                Z80_JUMP(pc);
                                 break;
 
                         }                               
@@ -2046,6 +2054,7 @@ emulate_next_instruction:
 
                                 elapsed_cycles += 8;
 
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2074,6 +2083,7 @@ emulate_next_instruction:
                                         elapsed_cycles += 3;
 
                                 }
+                                Z80_JUMP(pc);
                                 break;  
 
                         }                                            
@@ -2081,6 +2091,7 @@ emulate_next_instruction:
                         case JP_HL: {
 
                                 pc = HL_IX_IY;
+                                Z80_JUMP(pc);
                                 break;
 
                         }                       
@@ -2109,6 +2120,7 @@ emulate_next_instruction:
                                         elapsed_cycles += 4;
 
                                 }
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2125,6 +2137,7 @@ emulate_next_instruction:
 
                                 elapsed_cycles++;
 
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2154,6 +2167,7 @@ emulate_next_instruction:
                                         elapsed_cycles += 6;
 
                                 }
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2161,6 +2175,7 @@ emulate_next_instruction:
                         case RET: {
 
                                 POP(pc);
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2173,6 +2188,7 @@ emulate_next_instruction:
 
                                 }
                                 elapsed_cycles++;
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2212,6 +2228,7 @@ emulate_next_instruction:
                                 PUSH(pc);
                                 pc = RST_TABLE[Y(opcode)];
                                 elapsed_cycles++;
+                                Z80_JUMP(pc);
                                 break;
 
                         }
@@ -2220,10 +2237,11 @@ emulate_next_instruction:
 
                         case IN_A_N: {
 
-                                int     n;
+                                int     n, inputResult=0;
 
                                 READ_N(n);
-                                Z80_INPUT_BYTE(n, A);
+                                Z80_INPUT_BYTE(A, n, inputResult);
+                                A = inputResult;
 
                                 elapsed_cycles += 4;
 
@@ -2233,8 +2251,8 @@ emulate_next_instruction:
 
                         case IN_R_C: {
 
-                                int     x;                                           
-                                Z80_INPUT_BYTE(C, x);
+                                int     x=0;                                           
+                                Z80_INPUT_BYTE(B, C, x);
                                 if (Y(opcode) != INDIRECT_HL) 
 
                                         R(Y(opcode)) = x;
@@ -2256,9 +2274,9 @@ emulate_next_instruction:
 
                         case INI_IND: {
 
-                                int     x, f;
+                                int     x=0, f;
 
-                                Z80_INPUT_BYTE(C, x);
+                                Z80_INPUT_BYTE(B, C, x);
                                 WRITE_BYTE(HL, x);
 
                                 f = SZYX_FLAGS_TABLE[--B & 0xff]
@@ -2287,7 +2305,7 @@ emulate_next_instruction:
 
                         case INIR_INDR: {
 
-                                int     d, b, hl, x, f;
+                                int     d, b, hl, x=0, f;
 
 #ifdef Z80_HANDLE_SELF_MODIFYING_CODE
 
@@ -2309,7 +2327,7 @@ emulate_next_instruction:
 
                                         r += 2;
                 
-                                        Z80_INPUT_BYTE(C, x);
+                                        Z80_INPUT_BYTE(B, C, x);
                                         Z80_WRITE_BYTE(hl, x);
 
                                         hl += d;
@@ -2372,7 +2390,7 @@ emulate_next_instruction:
                                 int     n;
 
                                 READ_N(n);
-                                Z80_OUTPUT_BYTE(n, A);
+                                Z80_OUTPUT_BYTE(A, n, A);
 
                                 elapsed_cycles += 4;
 
@@ -2387,7 +2405,7 @@ emulate_next_instruction:
                                 x = Y(opcode) != INDIRECT_HL
                                         ? R(Y(opcode))
                                         : 0;
-                                Z80_OUTPUT_BYTE(C, x);
+                                Z80_OUTPUT_BYTE(B, C, x);
 
                                 elapsed_cycles += 4;
 
@@ -2400,7 +2418,7 @@ emulate_next_instruction:
                                 int     x, f;
 
                                 READ_BYTE(HL, x);
-                                Z80_OUTPUT_BYTE(C, x);
+                                Z80_OUTPUT_BYTE(B, C, x);
 
                                 HL += opcode == OPCODE_OUTI ? +1 : -1;
 
@@ -2432,7 +2450,7 @@ emulate_next_instruction:
                                         r += 2;
 
                                         Z80_READ_BYTE(hl, x);
-                                        Z80_OUTPUT_BYTE(C, x);
+                                        Z80_OUTPUT_BYTE(B, C, x);
 
                                         hl += d;
                                         if (--b) 

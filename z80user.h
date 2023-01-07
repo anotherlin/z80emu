@@ -127,15 +127,28 @@ extern "C" {
 
 #define Z80_WRITE_WORD_INTERRUPT(address, x)	Z80_WRITE_WORD((address), (x))
 
-#define Z80_INPUT_BYTE(port, x)                                         \
+typedef unsigned char byte;
+typedef unsigned short word;
+
+#define Z80_INPUT_BYTE(portHi, portLo, x)                               \
 {                                                                       \
+        /* word p = ((word)((byte)(portHi)))<<8 | (byte)(portLo); */    \
+        /* (x) = InZ80(p); */                                           \
         SystemCall((ZEXTEST *) context);				\
 }
 
-#define Z80_OUTPUT_BYTE(port, x)                                        \
+#define Z80_OUTPUT_BYTE(portHi, portLo, x)                              \
 {                                                                       \
         ((ZEXTEST *) context)->is_done = !0; 				\
         number_cycles = 0;                                              \
+        /* word p = ((word)((byte)(portHi)))<<8 | (byte)(portLo); */    \
+        /* OutZ80( p, (byte)(x) ); */                                   \
+}
+
+/* called on JP, JR, CALL, RST, or RET */
+#define Z80_JUMP(pc)                                                    \
+{                                                                       \
+        /* JumpZ80((word)pc); */                                        \
 }
 
 #ifdef __cplusplus
