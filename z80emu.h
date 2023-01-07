@@ -145,6 +145,10 @@ typedef struct Z80_STATE {
 
 } Z80_STATE;
 
+/* Initialize processor's register pointers */
+
+extern void     Z80ResetTable (Z80_STATE *state);
+
 /* Initialize processor's state to power-on default. */
 
 extern void     Z80Reset (Z80_STATE *state);
